@@ -1,0 +1,7 @@
+name: ThirstPlugin
+version: ${project.version}
+main: fr.radi3nt.thirstplugin.MainThirstPlugin
+api-version: 1.13
+prefix: ThirstPlugin
+authors: [Radi3nt]
+description: A plugin that bring thirst in your world ...

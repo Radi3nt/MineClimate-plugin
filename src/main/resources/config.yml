@@ -1,0 +1,64 @@
+DrinkValue:
+  DrinkFromSeeValue: 1
+  DrinkFromWaterValue: 2
+  DrinkFromWaterbottleValue: 3
+  DrinkFromPurifiedWaterbottleValue: 4
+  DrinkFromFilteredbottleValue: 5
+
+FoodValue:
+  apple: 2
+  baked_potato: -2
+  beetroot: 0
+  beetroot_soup: 1
+  bread: -2
+  cake: -1
+  carrot: 1
+  chorus_fruit: -3
+  cooked_chicken: -2
+  cooked_cod: -2
+  cooked_mutton: -2
+  cooked_porkchop: -2
+  cooked_rabbit: -2
+  cooked_salmon: -2
+  cookie: -3
+  dried_kelp: -3
+  golden_apple: -4
+  golden_carrot: -4
+  honey_bottle: 2
+  melon_slice: 5
+  milk_bucket: 1
+  mushroom_stew: 2
+  poisonous_potato: 1
+  potato: -2
+  potion: 1
+  pumpkin_pie: 1
+  rabbit_stew: -1
+  beef: -2
+  chicken: -2
+  cod: -2
+  mutton: -2
+  porkchop: -2
+  rabbit: -2
+  salmon: -2
+  rotten_flesh: -3
+  spider_eye: -4
+  steak: -2
+  suspicious_stew: 1
+  sweet_berries: 4
+
+
+
+ThirstDecrease: 1;
+cooldownDecreaseAFK: 0.25
+cooldownDecreaseSprint: 1
+cooldownDecreaseWalk: 0.5
+cooldownIncreaseSneak: 0.05
+MaxThirst: 100
+Maxcooldown: 10
+
+DieInterval: 3
+DiebaseDamage: 1.5
+
+MaxbarDisplay: 100
+
+TickValue: 4
