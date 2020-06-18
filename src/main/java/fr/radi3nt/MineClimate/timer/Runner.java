@@ -12,6 +12,7 @@ import org.bukkit.block.Furnace;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Rabbit;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -90,6 +91,13 @@ public class Runner extends BukkitRunnable {
                             }
                         }
                     }
+                    ItemStack[] armor = player.getInventory().getArmorContents();
+                    for (ItemStack armorpiece : armor) {
+                        if (armorpiece != null && !armorpiece.getType().equals(Material.AIR)) {
+                            setTemperature(player, getTemperatureFromPlayer(player) + ((float) armorpiece.getDurability()/armorpiece.getType().getMaxDurability()*0.1));
+                            setCooldown(player, getCooldownFromPlayer(player) - ((float) armorpiece.getDurability()/armorpiece.getType().getMaxDurability()*100)/20);
+                        }
+                    }
                 }
                 if (player.getLocation().getWorld().hasStorm()) {
                     setTemperature(player, getTemperatureFromPlayer(player) - RainShift *2+(NegativeSeasonValue));
@@ -121,8 +129,8 @@ public class Runner extends BukkitRunnable {
                             int number = blocksFromTwoPoints(player.getLocation().getBlock().getLocation(), blockloc.getBlock().getLocation()).size();
 
                             if (player.isSneaking()) {
-                                setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 3));
-                                setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 3));
+                                setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
+                                setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
                             } else {
                                 setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
                                 setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
@@ -134,8 +142,8 @@ public class Runner extends BukkitRunnable {
                         int number = blocksFromTwoPoints(player.getLocation().getBlock().getLocation(), blockloc.getBlock().getLocation()).size();
 
                         if (player.isSneaking()) {
-                            setTemperature(player, getTemperatureFromPlayer(player) + hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 3));
-                            setCooldown(player, getCooldownFromPlayer(player) - hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 3));
+                            setTemperature(player, getTemperatureFromPlayer(player) + hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
+                            setCooldown(player, getCooldownFromPlayer(player) - hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
                         } else {
                             setTemperature(player, getTemperatureFromPlayer(player) + hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 4));
                             setCooldown(player, getCooldownFromPlayer(player) - hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 4));

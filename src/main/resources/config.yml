@@ -15,7 +15,7 @@ FoodValue:
   cooked_salmon: -2
   cooked_beef: -2
   cookie: -3
-  dried_kelp: -3
+  dried_kelp: -5
   golden_apple: -4
   golden_carrot: -4
   honey_bottle: 2

@@ -1,10 +1,8 @@
 package fr.radi3nt.MineClimate;
 
-import fr.radi3nt.MineClimate.event.ClickOnWater;
-import fr.radi3nt.MineClimate.event.ConsumeItemEvent;
-import fr.radi3nt.MineClimate.event.CraftPurifiedBottle;
-import fr.radi3nt.MineClimate.event.OnDeathEvent;
+import fr.radi3nt.MineClimate.event.*;
 import fr.radi3nt.MineClimate.timer.Runner;
+import net.minecraft.server.v1_15_R1.RecipeCrafting;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -58,10 +56,13 @@ public final class MainMineClimate extends JavaPlugin {
     }
 
     private void RegisterEvents() {
+        getServer().getPluginManager().registerEvents(new OnCraftEvent(), this);
         getServer().getPluginManager().registerEvents(new OnDeathEvent(), this);
         getServer().getPluginManager().registerEvents(new ClickOnWater(), this);
         getServer().getPluginManager().registerEvents(new ConsumeItemEvent(), this);
         getServer().getPluginManager().registerEvents(new CraftPurifiedBottle(), this);
+        getServer().getPluginManager().registerEvents(new OnRegenerateEvent(), this);
+        getServer().getPluginManager().registerEvents(new PrepareItemCraftEvent(), this);
     }
 
     @Override

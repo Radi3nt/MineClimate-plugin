@@ -55,8 +55,8 @@ public class ClimateAPI {
     public final static int DieInterval = 3;
     public final static double DieBaseDamage = 1;
 
-    public final static int MaxBarDisplay = 100;
-    public final static int MaxTemperatureMultiply = 100;
+    public final static int MaxThirstBarDisplay = 100;
+    public final static int MaxTemperatureBarDisplay = 100;
 
     public final static int TickValue = 20;
 
@@ -112,9 +112,9 @@ public class ClimateAPI {
             if (thirst <= MaxThirst) {
                 StringBuilder message = new StringBuilder();
                 message.append(ChatColor.BLUE + "" + ChatColor.BOLD + "[ ");
-                for (int x = 0; x < MaxBarDisplay; x++) {
+                for (int x = 0; x < MaxThirstBarDisplay; x++) {
                     String m;
-                    if (x >= ((float) thirst / MaxThirst) * MaxBarDisplay) {
+                    if (x >= ((float) thirst / MaxThirst) * MaxThirstBarDisplay) {
                         if ((float) x / 10 == x / 10) {
                             m = ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "|";
                         } else {
@@ -133,31 +133,31 @@ public class ClimateAPI {
                 //Temperature
                 message.append("   ");
                 message.append(ChatColor.GOLD + "" + ChatColor.BOLD + "[ " + ChatColor.RESET);
-                int temperatureFormat = (int) (temperature / 10 * MaxTemperatureMultiply / 2);
-                for (int z = -MaxTemperatureMultiply / 2; z < MaxTemperatureMultiply / 2; z++) {
+                int temperatureFormat = (int) (temperature / 10 * MaxTemperatureBarDisplay / 2);
+                for (int z = -MaxTemperatureBarDisplay / 2; z < MaxTemperatureBarDisplay / 2; z++) {
                     String m = "";
-                    if (z >= (float) -100 / 100 * MaxTemperatureMultiply / 2 && z < -(float) 75 / 100 * MaxTemperatureMultiply / 2) {
+                    if (z >= (float) -100 / 100 * MaxTemperatureBarDisplay / 2 && z < -(float) 75 / 100 * MaxTemperatureBarDisplay / 2) {
                         m = ChatColor.BLUE + "";
                     }
-                    if (z >= (float) -75 / 100 * MaxTemperatureMultiply / 2 && z < (float) -50 / 100 * MaxTemperatureMultiply / 2) {
+                    if (z >= (float) -75 / 100 * MaxTemperatureBarDisplay / 2 && z < (float) -50 / 100 * MaxTemperatureBarDisplay / 2) {
                         m = ChatColor.DARK_AQUA + "";
                     }
-                    if (z >= (float) -50 / 100 * MaxTemperatureMultiply / 2 && z < (float) -25 / 100 * MaxTemperatureMultiply / 2) {
+                    if (z >= (float) -50 / 100 * MaxTemperatureBarDisplay / 2 && z < (float) -25 / 100 * MaxTemperatureBarDisplay / 2) {
                         m = ChatColor.AQUA + "";
                     }
-                    if (z >= (float) -25 / 100 * MaxTemperatureMultiply / 2 && z < (float) 25 / 100 * MaxTemperatureMultiply / 2) {
+                    if (z >= (float) -25 / 100 * MaxTemperatureBarDisplay / 2 && z < (float) 25 / 100 * MaxTemperatureBarDisplay / 2) {
                         m = ChatColor.GREEN + "";
                     }
-                    if (z >= (float) -3 / 100 * MaxTemperatureMultiply / 2 && z < (float) 3 / 100 * MaxTemperatureMultiply / 2) {
+                    if (z >= (float) -3 / 100 * MaxTemperatureBarDisplay / 2 && z < (float) 3 / 100 * MaxTemperatureBarDisplay / 2) {
                         m = ChatColor.DARK_GREEN + "";
                     }
-                    if (z >= (float) 25 / 100 * MaxTemperatureMultiply / 2 && z < (float) 50 / 100 * MaxTemperatureMultiply / 2) {
+                    if (z >= (float) 25 / 100 * MaxTemperatureBarDisplay / 2 && z < (float) 50 / 100 * MaxTemperatureBarDisplay / 2) {
                         m = ChatColor.GOLD + "";
                     }
-                    if (z >= (float) 50 / 100 * MaxTemperatureMultiply / 2 && z < (float) 75 / 100 * MaxTemperatureMultiply / 2) {
+                    if (z >= (float) 50 / 100 * MaxTemperatureBarDisplay / 2 && z < (float) 75 / 100 * MaxTemperatureBarDisplay / 2) {
                         m = ChatColor.RED + "";
                     }
-                    if (z >= (float) 75 / 100 * MaxTemperatureMultiply / 2 && z < (float) 100 / 100 * MaxTemperatureMultiply / 2) {
+                    if (z >= (float) 75 / 100 * MaxTemperatureBarDisplay / 2 && z < (float) 100 / 100 * MaxTemperatureBarDisplay / 2) {
                         m = ChatColor.DARK_RED + "";
                     }
                     if (z == temperatureFormat) {
@@ -337,7 +337,7 @@ public class ClimateAPI {
 
     public static double isPoisoned(int chance) {
         double random = Math.random();
-        if (random * 100 < chance) {
+        if (random * 100 >= chance) {
             return 0;
         } else {
             return Math.random();
@@ -345,6 +345,7 @@ public class ClimateAPI {
     }
 
     public static void poisonSet(Player player, int force) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, force*22 * TickValue, force));
         if (force == 1) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 10 * TickValue, 1));
         }
@@ -395,7 +396,23 @@ public class ClimateAPI {
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
         item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+        return item;
+    }
 
+    public static ItemStack createGourd(int chance, int drink) {
+        ItemStack item = new ItemStack(Material.POTION);
+        Potion potion = Potion.fromItemStack(item);
+        potion.setType(PotionType.WATER);
+        item = potion.toItemStack(1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.WHITE + "Gourd");
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "" + chance + "% of chance to be infected");
+        lore.add(ChatColor.GRAY + "" + drink + " drink remaining");
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         return item;
     }
 }

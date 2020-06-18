@@ -32,7 +32,7 @@ public class CraftPurifiedBottle implements Listener {
                     event.setCancelled(true);
                 } else {
                     int Min = 1;
-                    int Max = 20;
+                    int Max = 25;
                     int random = Min + (int) (Math.random() * ((Max - Min) + 1));
                     event.setResult(createPurifiedWater(random));
                 }
