@@ -1,6 +1,6 @@
-name: ThirstPlugin
+name: MineClimate
 version: ${project.version}
-main: fr.radi3nt.thirstplugin.MainThirstPlugin
+main: fr.radi3nt.MineClimate.MainMineClimate
 api-version: 1.13
 prefix: ThirstPlugin
 authors: [Radi3nt]

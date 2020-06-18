@@ -1,4 +1,4 @@
-package fr.radi3nt.thirstplugin.classes;
+package fr.radi3nt.MineClimate.classes;
 
 public enum Season {
     SPRING,

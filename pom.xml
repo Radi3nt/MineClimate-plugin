@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.radi3nt</groupId>
-    <artifactId>ThirstPlugin</artifactId>
+    <artifactId>MineClimate</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>ThirstPlugin</name>
+    <name>MineClimate</name>
 
     <description>A plugin that give thirst ...</description>
     <properties>
