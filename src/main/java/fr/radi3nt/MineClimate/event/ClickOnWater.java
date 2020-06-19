@@ -1,6 +1,8 @@
 package fr.radi3nt.MineClimate.event;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -30,12 +32,22 @@ public class ClickOnWater implements Listener {
                         if (getThirstFromPlayer(player) != null) {
                             if (e.getClickedBlock().getBiome().equals(Biome.OCEAN)) {
                                 if (getThirstFromPlayer(player) != MaxThirst) {
-                                    poisonCompact(player, 80);
+                                    player.playSound(player.getLocation(), Sound.ITEM_BUCKET_FILL, SoundCategory.PLAYERS, 1F, 1F);
+                                    if (poisonCompact(player, 80)!=0) {
+                                        player.playSound(player.getLocation(), Sound.ENTITY_CAT_HISS, SoundCategory.PLAYERS, 1F, 1F);
+                                    } else {
+                                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 1F, 1F);
+                                    }
                                 }
                                 addThirst(player, DrinkFromSee);
                             } else {
                                 if (getThirstFromPlayer(player) != MaxThirst) {
-                                    poisonCompact(player, 60);
+                                    player.playSound(player.getLocation(), Sound.ITEM_BUCKET_FILL, SoundCategory.PLAYERS, 1F, 1F);
+                                    if (poisonCompact(player, 60)!=0) {
+                                        player.playSound(player.getLocation(), Sound.ENTITY_CAT_HISS, SoundCategory.PLAYERS, 1F, 1F);
+                                    } else {
+                                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 1F, 1F);
+                                    }
                                 }
                                 addThirst(player, DrinkFromWater);
                             }

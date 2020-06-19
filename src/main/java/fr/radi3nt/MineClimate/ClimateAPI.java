@@ -4,12 +4,14 @@ import fr.radi3nt.MineClimate.classes.Priority;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
@@ -32,6 +34,9 @@ public class ClimateAPI {
     private static HashMap<Player, Double> Temperature = new HashMap<>();
 
     private static HashMap<Player, Priority> BlockedPriority = new HashMap<>();
+
+    public final static String TemperatureEnchant = "AmbientAdapt";
+    public final static String TemperatureItemName = "Ozzy Liner";
 
     public final static int DrinkFromSee = 1;
     public final static int DrinkFromWater = 2;
@@ -404,15 +409,17 @@ public class ClimateAPI {
         Potion potion = Potion.fromItemStack(item);
         potion.setType(PotionType.WATER);
         item = potion.toItemStack(1);
+        PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+        potionMeta.setColor(Color.fromBGR(0, 41, 88));
+        item.setItemMeta(potionMeta);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE + "Gourd");
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "" + chance + "% of chance to be infected");
+        lore.add(ChatColor.GRAY + "" + chance + "% of chance to be poisoned");
         lore.add(ChatColor.GRAY + "" + drink + " drink remaining");
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         return item;
     }
 }

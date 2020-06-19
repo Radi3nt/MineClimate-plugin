@@ -3,6 +3,8 @@ package fr.radi3nt.MineClimate.event;
 import fr.radi3nt.MineClimate.MainMineClimate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -27,7 +29,6 @@ public class ConsumeItemEvent implements Listener {
         ItemStack item = e.getItem();
         for (String food : plugin.getConfig().getConfigurationSection("FoodValue").getKeys(false)) {
             if (food.equals(item.getType().toString().toLowerCase())) {
-                if (getThirstFromPlayer(e.getPlayer()) != MaxThirst) {
                     if (item.getItemMeta() instanceof PotionMeta) {
                         final PotionMeta meta = (PotionMeta) item.getItemMeta();
                         final PotionData data = meta.getBasePotionData();
@@ -44,6 +45,8 @@ public class ConsumeItemEvent implements Listener {
                                 percentageS = percentageS.trim();
                                 int percentage = Integer.parseInt(percentageS);
                                 poisonCompact(e.getPlayer(), percentage);
+                                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 1F, 1F);
+
                             } else if (item.getItemMeta().getDisplayName().contains("Gourd") && item.getItemMeta().hasLore()) {
                                 e.setCancelled(true);
                                 addThirst(e.getPlayer(), 3);
@@ -86,6 +89,7 @@ public class ConsumeItemEvent implements Listener {
                                 } else {
                                     finaly.setItemMeta(createGourd(percentage, reaming).getItemMeta());
                                 }
+                                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 1F, 1F);
                                 e.getPlayer().getInventory().setItemInMainHand(finaly);
                         } else {
                             addThirst(e.getPlayer(), 4);
@@ -100,9 +104,6 @@ public class ConsumeItemEvent implements Listener {
                             removeThirst(e.getPlayer(), value * -1);
                         }
                     }
-                } else {
-                    e.setCancelled(true);
-                }
             }
         }
     }

@@ -1,18 +1,29 @@
 package fr.radi3nt.MineClimate;
 
 import fr.radi3nt.MineClimate.event.*;
+import fr.radi3nt.MineClimate.event.crafts.CraftPurifiedBottle;
+import fr.radi3nt.MineClimate.event.crafts.OnCraftEvent;
+import fr.radi3nt.MineClimate.event.crafts.PrepareItemCraftEvent;
 import fr.radi3nt.MineClimate.timer.Runner;
-import net.minecraft.server.v1_15_R1.RecipeCrafting;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Item;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import static fr.radi3nt.MineClimate.ClimateAPI.setTemperature;
+import static fr.radi3nt.MineClimate.ClimateAPI.setThirst;
 
 public final class MainMineClimate extends JavaPlugin {
 
@@ -44,6 +55,24 @@ public final class MainMineClimate extends JavaPlugin {
         item.setType(PotionType.WATER);
         getServer().addRecipe(new FurnaceRecipe(item.toItemStack(1), Material.POTION));
 
+
+        ArrayList<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        for (Player player : players) {
+            File locations = new File("plugins/MineClimate", "data.yml");
+            if (!locations.exists()) {
+                try {
+                    locations.createNewFile();
+                } catch (IOException event) {
+                    event.printStackTrace();
+                }
+            }
+            FileConfiguration loc = YamlConfiguration.loadConfiguration(locations);
+            if (loc.get("Players." + player.getName()) != null) {
+                setThirst(player, loc.getInt("Players." + player.getName() + ".thirst"));
+                setTemperature(player, loc.getDouble("Players." + player.getName() + ".temperature"));
+            }
+        }
+
     }
 
     private void RegisterRunnables() {
@@ -56,6 +85,7 @@ public final class MainMineClimate extends JavaPlugin {
     }
 
     private void RegisterEvents() {
+        getServer().getPluginManager().registerEvents(new OnPlayerJoin(), this);
         getServer().getPluginManager().registerEvents(new OnCraftEvent(), this);
         getServer().getPluginManager().registerEvents(new OnDeathEvent(), this);
         getServer().getPluginManager().registerEvents(new ClickOnWater(), this);

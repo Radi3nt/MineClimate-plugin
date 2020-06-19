@@ -1,4 +1,4 @@
-package fr.radi3nt.MineClimate.event;
+package fr.radi3nt.MineClimate.event.crafts;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,7 +20,7 @@ public class PrepareItemCraftEvent implements Listener {
     @EventHandler
     public void PrepareItemCraftEvent (org.bukkit.event.inventory.PrepareItemCraftEvent e) {
         if (checkForGourdRecipe(e.getInventory().getMatrix())==1) {
-            e.getInventory().setResult(createGourd((int) (Math.random()*100), 3));
+            e.getInventory().setResult(createGourd(50, 3));
         }
         if (checkForGourdRecipe(e.getInventory().getMatrix())==2) {
             String lore = e.getInventory().getMatrix()[4].getItemMeta().getLore().get(0);
@@ -65,16 +65,7 @@ public class PrepareItemCraftEvent implements Listener {
         }
         if (itemStacks[4]!=null && itemStacks[4].getType() == Material.POTION) {
             if (itemStacks[4].getItemMeta().hasLore() && itemStacks[4].getItemMeta().getDisplayName().contains("Purified water bottle")) {
-                try {
-                    Potion potion = Potion.fromItemStack(itemStacks[4]);
-                    if (potion.getType()==PotionType.WATER) {
-                        return 2;
-                    } else {
-                        return 0;
-                    }
-                } catch (Exception e) {
-                    return 0;
-                }
+                return 2;
 
             } else {
 

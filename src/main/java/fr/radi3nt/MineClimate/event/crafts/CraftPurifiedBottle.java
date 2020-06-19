@@ -1,4 +1,4 @@
-package fr.radi3nt.MineClimate.event;
+package fr.radi3nt.MineClimate.event.crafts;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;

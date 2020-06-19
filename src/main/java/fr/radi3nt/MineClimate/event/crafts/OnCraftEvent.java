@@ -1,4 +1,4 @@
-package fr.radi3nt.MineClimate.event;
+package fr.radi3nt.MineClimate.event.crafts;
 
 
 import org.bukkit.Material;
@@ -8,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.CraftingInventory;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 
@@ -24,15 +23,14 @@ public class OnCraftEvent implements Listener {
                 if (e.getCurrentItem().getType() != Material.AIR) {
                     if (e.getCurrentItem().getItemMeta().getDisplayName().contains("Gourd")) {
                         ItemStack[] matrix = inventory.getMatrix();
-                        for (ItemStack itemStack : matrix) {
-                            if (itemStack.getAmount() - 1 >= 0) {
-                                itemStack.setAmount(itemStack.getAmount() - 1);
-                            } else {
-                                itemStack.setType(Material.AIR);
+
+                            for (ItemStack itemStack : matrix) {
+                                if (itemStack.getAmount() - 1 >= 0) {
+                                    itemStack.setAmount(itemStack.getAmount() - 1);
+                                } else {
+                                    itemStack.setType(Material.AIR);
+                                }
                             }
-                        }
-
-
                         String lore = e.getCurrentItem().getItemMeta().getLore().get(0);
                         char[] chars = new char[4];
                         lore.getChars(2, lore.indexOf('%'), chars, 0);
@@ -43,21 +41,19 @@ public class OnCraftEvent implements Listener {
                         percentageS = percentageS.trim();
                         int percentage = Integer.parseInt(percentageS);
 
+                        if (percentage!=50) {
+                            inventory.setMatrix(matrix);
+                            ItemStack item = createGourd(percentage, 5);
+                            e.getWhoClicked().setItemOnCursor(item);
 
-                        String lore3 = e.getCurrentItem().getItemMeta().getLore().get(1);
-                        char[] chars1 = new char[10];
-                        lore3.getChars(2, lore3.indexOf('d'), chars1, 0);
-                        String reamingS = "";
-                        for (char aChar : chars1) {
-                            reamingS = reamingS + aChar;
+                        } else {
+                            inventory.setMatrix(matrix);
+                            int Min = 30;
+                            int Max = 60;
+                            int random = Min + (int) (Math.random() * ((Max - Min) + 1));
+                            ItemStack item = createGourd(random, 3);
+                            e.getWhoClicked().setItemOnCursor(item);
                         }
-                        reamingS = reamingS.trim();
-                        int reaming = Integer.parseInt(reamingS);
-
-                        inventory.setMatrix(matrix);
-                        ItemStack item = createGourd(percentage, reaming);
-                        e.getWhoClicked().setItemOnCursor(item);
-
                     }
                 }
             }
