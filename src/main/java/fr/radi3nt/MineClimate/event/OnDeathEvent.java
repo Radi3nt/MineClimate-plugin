@@ -13,12 +13,14 @@ public class OnDeathEvent implements Listener {
     @EventHandler
     public void OnDeathEvent(PlayerDeathEvent e) {
         Player player = e.getEntity();
-        if (getTemperatureFromPlayer(player)>6) {
-            e.setDeathMessage(e.getEntity().getName() + " die from hot");
-        } else if (getTemperatureFromPlayer(player)<-6) {
-            e.setDeathMessage(e.getEntity().getName() + " die from cold");
-        } else if (getThirstFromPlayer(player)<=1) {
-            e.setDeathMessage(e.getEntity().getDisplayName() + " die from thirst");
+        if (e.getDeathMessage().equals(player.getName() + " died")) {
+            if (getTemperatureFromPlayer(player) > 6) {
+                e.setDeathMessage(e.getEntity().getName() + " died from hot");
+            } else if (getTemperatureFromPlayer(player) < -6) {
+                e.setDeathMessage(e.getEntity().getName() + " died from cold");
+            } else if (getThirstFromPlayer(player) <= 1) {
+                e.setDeathMessage(e.getEntity().getDisplayName() + " died from thirst");
+            }
         }
         resetPlayerThirst(player);
     }

@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
@@ -22,8 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static fr.radi3nt.MineClimate.ClimateAPI.setTemperature;
-import static fr.radi3nt.MineClimate.ClimateAPI.setThirst;
+import static fr.radi3nt.MineClimate.ClimateAPI.*;
 
 public final class MainMineClimate extends JavaPlugin {
 
@@ -54,6 +54,18 @@ public final class MainMineClimate extends JavaPlugin {
         Potion item = Potion.fromItemStack(new ItemStack(Material.POTION));
         item.setType(PotionType.WATER);
         getServer().addRecipe(new FurnaceRecipe(item.toItemStack(1), Material.POTION));
+
+        ItemStack ozzy = createOzzyLiner();
+        ShapedRecipe ozzyRecipe = new ShapedRecipe(ozzy);
+        ozzyRecipe.shape("MAI","MTI","MEI");
+        ozzyRecipe.setIngredient('M', Material.MAGMA_BLOCK);
+        ozzyRecipe.setIngredient('A', Material.AIR);
+        ozzyRecipe.setIngredient('I', Material.ICE);
+        ozzyRecipe.setIngredient('T', Material.LEATHER_CHESTPLATE);
+        ozzyRecipe.setIngredient('E', Material.EMERALD);
+        getServer().addRecipe(ozzyRecipe);
+
+
 
 
         ArrayList<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
@@ -93,6 +105,7 @@ public final class MainMineClimate extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CraftPurifiedBottle(), this);
         getServer().getPluginManager().registerEvents(new OnRegenerateEvent(), this);
         getServer().getPluginManager().registerEvents(new PrepareItemCraftEvent(), this);
+        getServer().getPluginManager().registerEvents(new OnRegenerateEvent(), this);
     }
 
     @Override

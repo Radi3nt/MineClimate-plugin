@@ -3,6 +3,7 @@ package fr.radi3nt.MineClimate;
 import fr.radi3nt.MineClimate.classes.Priority;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_15_R1.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -36,7 +37,7 @@ public class ClimateAPI {
     private static HashMap<Player, Priority> BlockedPriority = new HashMap<>();
 
     public final static String TemperatureEnchant = "AmbientAdapt";
-    public final static String TemperatureItemName = "Ozzy Liner";
+    public final static String TemperatureItemName = ChatColor.GOLD + "Ozzy Liner";
 
     public final static int DrinkFromSee = 1;
     public final static int DrinkFromWater = 2;
@@ -313,26 +314,27 @@ public class ClimateAPI {
 
     public static void removeThirst(Player player, Integer thirst) {
         setBlockedPriorityForPlayer(player, Priority.LOW);
+        final int[] i = {getThirstFromPlayer(player)};
+        if (getThirstFromPlayer(player) - thirst >= MaxThirst) {
+            setThirst(player, MaxThirst);
+        } else {
+            setThirst(player, getThirstFromPlayer(player) - thirst);
+        }
         new BukkitRunnable() {
 
-            int i = getThirstFromPlayer(player);
+
             boolean finshed = false;
 
             @Override
             public void run() {
-                i = i - 1;
-                displayActionBar(player, i, getTemperatureFromPlayer(player), Priority.MEDIUM);
+                i[0] = i[0] - 1;
+                displayActionBar(player, i[0], getTemperatureFromPlayer(player), Priority.MEDIUM);
                 if (finshed) {
                     setBlockedPriorityForPlayer(player, null);
-                    if (getThirstFromPlayer(player) - thirst >= MaxThirst) {
-                        setThirst(player, MaxThirst);
-                    } else {
-                        setThirst(player, getThirstFromPlayer(player) - thirst);
-                    }
                     cancel();
                 }
-                if (i == getThirstFromPlayer(player) - thirst || i == 0) {
-                    i = i + 1;
+                if (i[0] == getThirstFromPlayer(player) - thirst || i[0] == 0) {
+                    i[0] = i[0] + 1;
                     finshed = true;
                 }
             }
@@ -420,6 +422,26 @@ public class ClimateAPI {
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
+        return item;
+    }
+
+    public static ItemStack combineOzzyLiner(ItemStack armor) {
+        ItemStack armortoreturn = armor.clone();
+        ItemMeta meta = armor.getItemMeta();
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GOLD + "Ozzy Liner combined");
+        meta.setLore(lore);
+        armortoreturn.setItemMeta(meta);
+        return armortoreturn;
+    }
+
+
+    public static ItemStack createOzzyLiner() {
+        ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE);
+        ItemMeta itemMeta = item.getItemMeta();
+        itemMeta.setDisplayName(TemperatureItemName);
+        item.setItemMeta(itemMeta);
+        item.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
         return item;
     }
 }

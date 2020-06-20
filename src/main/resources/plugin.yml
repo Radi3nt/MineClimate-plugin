@@ -2,6 +2,6 @@ name: MineClimate
 version: ${project.version}
 main: fr.radi3nt.MineClimate.MainMineClimate
 api-version: 1.13
-prefix: ThirstPlugin
+prefix: MineClimate
 authors: [Radi3nt]
 description: A plugin that bring thirst in your world ...

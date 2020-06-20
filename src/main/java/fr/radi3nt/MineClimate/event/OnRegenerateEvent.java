@@ -14,7 +14,7 @@ public class OnRegenerateEvent implements Listener {
         if (e.getEntity() instanceof Player) {
             Player player = (Player) e.getEntity();
             if (getThirstFromPlayer(player) > 60) {
-                setThirst(player, getThirstFromPlayer(player) - ThirstDecrease);
+                setCooldown(player, getCooldownFromPlayer(player) - 5);
             } else {
                 e.setCancelled(true);
             }

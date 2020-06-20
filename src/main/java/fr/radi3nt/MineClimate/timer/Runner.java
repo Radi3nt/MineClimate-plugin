@@ -9,10 +9,11 @@ import org.bukkit.block.Furnace;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftInventoryCrafting;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Rabbit;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
@@ -40,7 +41,7 @@ public class Runner extends BukkitRunnable {
     static int interval1 = 0;
     static int interval2 = 0;
 
-    static int red = 256;
+    static int red = 255;
     static int blue = 0;
     static boolean ascend = false;
 
@@ -93,6 +94,29 @@ public class Runner extends BukkitRunnable {
                     }
                     if (player.getLocation().getWorld().hasStorm()) {
                         setTemperature(player, getTemperatureFromPlayer(player) - RainShift * 2 + (NegativeSeasonValue));
+                    }
+
+                    ItemStack[] armor = player.getInventory().getArmorContents();
+                    for (ItemStack armorpiece : armor) {
+                        if (armorpiece != null && !armorpiece.getType().equals(Material.AIR)) {
+                            if (armorpiece.hasItemMeta()) {
+                                if (armorpiece.getItemMeta().hasLore()) {
+                                    for (int i = 0;i<armorpiece.getItemMeta().getLore().size();i++) {
+                                        String[] fLore = ChatColor.stripColor(armorpiece.getItemMeta().getLore().get(i)).split(" ");
+                                        String testLore = fLore[0];
+
+                                        if (testLore.equals(TemperatureEnchant) || armorpiece.getItemMeta().getLore().contains(ChatColor.GOLD + "Ozzy Liner combined")) {
+                                            if (getTemperatureFromPlayer(player) > 0) {
+                                                setTemperature(player, getTemperatureFromPlayer(player) - 0.2);
+                                            }
+                                            if (getTemperatureFromPlayer(player) < 0) {
+                                                setTemperature(player, getTemperatureFromPlayer(player) + 0.2);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
 
@@ -168,22 +192,6 @@ public class Runner extends BukkitRunnable {
                                 setTemperature(player, getTemperatureFromPlayer(player) + ((float) armorpiece.getDurability() / armorpiece.getType().getMaxDurability() * 100) / 1000);
                                 setCooldown(player, getCooldownFromPlayer(player) - ((float) armorpiece.getDurability() / armorpiece.getType().getMaxDurability() * 100) / 20);
                             }
-                            if (armorpiece.hasItemMeta()) {
-                                if (armorpiece.getItemMeta().hasLore()) {
-                                    for (int i = 0;i<armorpiece.getItemMeta().getLore().size();i++) {
-                                        String[] fLore = ChatColor.stripColor(armorpiece.getItemMeta().getLore().get(i)).split(" ");
-                                        String testLore = fLore[0];
-                                        if (testLore.equals(TemperatureEnchant)) {
-                                            if (getTemperatureFromPlayer(player) > 0) {
-                                                setTemperature(player, getTemperatureFromPlayer(player) - Integer.parseInt(fLore[1].trim())/60);
-                                            }
-                                            if (getTemperatureFromPlayer(player) < 0) {
-                                                setTemperature(player, getTemperatureFromPlayer(player) + Integer.parseInt(fLore[1].trim())/60);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
                         }
                     }
                 }
@@ -240,7 +248,18 @@ public class Runner extends BukkitRunnable {
                             if (contents[x].getType().equals(Material.LEATHER_CHESTPLATE)) {
                                 LeatherArmorMeta armorMeta = (LeatherArmorMeta) contents[x].getItemMeta();
                                 armorMeta.setColor(Color.fromRGB(red, 0, blue));
+                                armorMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                                 contents[x].setItemMeta(armorMeta);
+                                for (int z = 0; z < player.getInventory().getArmorContents().length; z++) {
+                                    ItemStack[] armor = player.getInventory().getArmorContents();
+                                    if (armor[z]!=null) {
+                                        if (armor[z].isSimilar(contents[x])) {
+                                            armor[z].setType(Material.AIR);
+                                            player.getInventory().setArmorContents(armor);
+                                            player.getInventory().addItem(contents[x]);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -281,16 +300,16 @@ public class Runner extends BukkitRunnable {
         }
         ticks++;
 
-        if (ascend=false) {
-            if (red<=0) {
+        if (!ascend) {
+            if (blue>=255) {
                 ascend=true;
             } else {
                 red=red-1;
                 blue++;
             }
         } else {
-            if (blue<=0) {
-                ascend=true;
+            if (red>=255) {
+                ascend=false;
             } else {
                 red++;
                 blue=blue-1;
@@ -349,6 +368,6 @@ public class Runner extends BukkitRunnable {
 
         return time < 12300 || time > 23850;
     }
-    
+
 
 }
