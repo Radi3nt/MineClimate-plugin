@@ -1,19 +1,17 @@
 package fr.radi3nt.MineClimate.timer;
 
 import fr.radi3nt.MineClimate.classes.Priority;
-import fr.radi3nt.MineClimate.classes.Season;
 import org.bukkit.*;
-import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftInventoryCrafting;
-import org.bukkit.entity.Item;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Rabbit;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
@@ -22,7 +20,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -30,13 +27,13 @@ import static fr.radi3nt.MineClimate.ClimateAPI.*;
 import static fr.radi3nt.MineClimate.event.ClickOnWater.CooldownFromDrinking;
 import static fr.radi3nt.MineClimate.timer.SeasonThread.SeasonValue;
 import static fr.radi3nt.MineClimate.timer.SeasonThread.TimeForSeasons;
-import static org.bukkit.Bukkit.getServer;
 
 public class Runner extends BukkitRunnable {
 
     private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 
     public static HashMap<Player, Integer> DieBar = new HashMap<>();
+    public static HashMap<Player, ArrayList<ArmorStand>> ArmorMap = new HashMap<>();
 
     static int NegativeSeasonValue = 0;
 
@@ -69,9 +66,6 @@ public class Runner extends BukkitRunnable {
 
                 ///////// TEMPERATURE \\\\\\\\\
 
-                Biome playerbiome = player.getLocation().getBlock().getBiome();
-
-                HashMap<Biome, Double> TemperaturesBiomes = new HashMap<>();
                 if (ticks - interval * 10 == 10) {
                     // LOGICAL \\
                     if (getTemperatureFromPlayer(player) > 6) {
@@ -83,6 +77,7 @@ public class Runner extends BukkitRunnable {
                     }
                     if (getTemperatureFromPlayer(player) < -6) {
                         player.damage(getTemperatureFromPlayer(player) * -1 / 4);
+                        Location playerloc = new Location(player.getLocation().getWorld(), player.getLocation().getX(), player.getLocation().getY() - 0.5, player.getLocation().getZ());
                     }
                     if (getTemperatureFromPlayer(player) < -9 && getTemperatureFromPlayer(player) > -10) {
                         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 3, true, false));
@@ -172,24 +167,50 @@ public class Runner extends BukkitRunnable {
                         }
                     }
                 }
+
+                if (getTemperatureFromPlayer(player) < -6) {
+                    if (!ArmorMap.containsKey(player)) {
+                        ArrayList<ArmorStand> armorlist = new ArrayList<>();
+                        ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
+                        armorStand.setCollidable(false);
+                        armorStand.setInvulnerable(true);
+                        armorStand.setGravity(false);
+                        armorStand.setSilent(true);
+                        armorStand.setAI(false);
+                        armorStand.setVisible(false);
+                        armorStand.setHelmet(new ItemStack(Material.ICE));
+                        armorlist.add(armorStand);
+                        armorlist.add(armorStand);
+                        ArmorMap.put(player, armorlist);
+                    }
+                } else {
+                    if (ArmorMap.containsKey(player)) {
+                        ArmorMap.get(player).get(0).remove();
+                        ArmorMap.get(player).get(1).remove();
+                        ArmorMap.remove(player);
+                    }
+                }
+
+
+                // Seasons \\
                 double relativeSeasonTemperature = 0;
                 double relativeSeasonTime = 0;
 
-                if (TimeForSeasons<24000*20/2) {
-                    relativeSeasonTime = ((float) TimeForSeasons/((float)24000*20/2));
+                if (TimeForSeasons < 24000 * 20 / 2) {
+                    relativeSeasonTime = ((float) TimeForSeasons / ((float) 24000 * 20 / 2));
                 } else {
-                    relativeSeasonTime = ((float) 24000*20/2 - TimeForSeasons/((float)24000*20/2));
+                    relativeSeasonTime = ((float) 24000 * 20 / 2 - TimeForSeasons / ((float) 24000 * 20 / 2));
                 }
                 //relativeSeasonTime is on 1 so ...
                 switch (getCurrentSeason()) {
                     case SPRING:
-                        relativeSeasonTemperature = relativeSeasonTime*0.3;
+                        relativeSeasonTemperature = relativeSeasonTime * 0.1;
                         break;
                     case SUMMER:
                         relativeSeasonTemperature = relativeSeasonTime*0.5;
                         break;
                     case AUTUMN:
-                        relativeSeasonTemperature = -relativeSeasonTime*0.3;
+                        relativeSeasonTemperature = -relativeSeasonTime * 0.1;
                         break;
                     case WINTER:
                         relativeSeasonTemperature = -relativeSeasonTime*0.5;

@@ -1,4 +1,4 @@
-package fr.radi3nt.MineClimate.event;
+package fr.radi3nt.MineClimate.event.functions;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -6,12 +6,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.io.File;
 import java.io.IOException;
 
-import static fr.radi3nt.MineClimate.ClimateAPI.*;
+import static fr.radi3nt.MineClimate.ClimateAPI.setTemperature;
+import static fr.radi3nt.MineClimate.ClimateAPI.setThirst;
 
 public class OnPlayerJoin implements Listener {
 

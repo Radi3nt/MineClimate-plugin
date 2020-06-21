@@ -2,12 +2,15 @@ package fr.radi3nt.MineClimate;
 
 import fr.radi3nt.MineClimate.classes.Season;
 import fr.radi3nt.MineClimate.classes.enchants.CustomsEnchants;
-import fr.radi3nt.MineClimate.classes.enchants.EnchantmentWarper;
 import fr.radi3nt.MineClimate.classes.enchants.Glow;
 import fr.radi3nt.MineClimate.event.*;
 import fr.radi3nt.MineClimate.event.crafts.CraftPurifiedBottle;
 import fr.radi3nt.MineClimate.event.crafts.OnCraftEvent;
 import fr.radi3nt.MineClimate.event.crafts.PrepareItemCraftEvent;
+import fr.radi3nt.MineClimate.event.functions.OnDeathEvent;
+import fr.radi3nt.MineClimate.event.functions.OnPlayerDisconnect;
+import fr.radi3nt.MineClimate.event.functions.OnPlayerJoin;
+import fr.radi3nt.MineClimate.event.functions.OnRespawnEvent;
 import fr.radi3nt.MineClimate.timer.Runner;
 import fr.radi3nt.MineClimate.timer.SeasonThread;
 import org.bukkit.Bukkit;
@@ -32,7 +35,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import static fr.radi3nt.MineClimate.ClimateAPI.*;
-import static fr.radi3nt.MineClimate.timer.SeasonThread.*;
+import static fr.radi3nt.MineClimate.timer.Runner.ArmorMap;
+import static fr.radi3nt.MineClimate.timer.SeasonThread.SeasonValue;
+import static fr.radi3nt.MineClimate.timer.SeasonThread.TimeForSeasons;
 
 public final class MainMineClimate extends JavaPlugin {
 
@@ -131,20 +136,33 @@ public final class MainMineClimate extends JavaPlugin {
 
     private void RegisterEvents() {
         getServer().getPluginManager().registerEvents(new OnPlayerJoin(), this);
-        getServer().getPluginManager().registerEvents(new OnCraftEvent(), this);
+        getServer().getPluginManager().registerEvents(new OnPlayerDisconnect(), this);
         getServer().getPluginManager().registerEvents(new OnDeathEvent(), this);
+        getServer().getPluginManager().registerEvents(new OnRespawnEvent(), this);
+        getServer().getPluginManager().registerEvents(new PlayerArmorStandManipulateEvent(), this);
+
+
+        getServer().getPluginManager().registerEvents(new OnRegenerateEvent(), this);
+
+        getServer().getPluginManager().registerEvents(new OnPlayerMoveEvent(), this);
+
+
         getServer().getPluginManager().registerEvents(new ClickOnWater(), this);
         getServer().getPluginManager().registerEvents(new ConsumeItemEvent(), this);
+
+        getServer().getPluginManager().registerEvents(new OnCraftEvent(), this);
         getServer().getPluginManager().registerEvents(new CraftPurifiedBottle(), this);
-        getServer().getPluginManager().registerEvents(new OnRegenerateEvent(), this);
         getServer().getPluginManager().registerEvents(new PrepareItemCraftEvent(), this);
-        getServer().getPluginManager().registerEvents(new OnRegenerateEvent(), this);
-        getServer().getPluginManager().registerEvents(new OnRespawnEvent(), this);
+
+
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        ArmorMap.forEach((player, armorList) -> armorList.get(0).remove());
+        ArmorMap.forEach((player, armorList) -> armorList.get(1).remove());
+        ArmorMap.clear();
     }
 
 

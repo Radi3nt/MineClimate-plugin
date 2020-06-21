@@ -1,4 +1,4 @@
-package fr.radi3nt.MineClimate.event;
+package fr.radi3nt.MineClimate.event.functions;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

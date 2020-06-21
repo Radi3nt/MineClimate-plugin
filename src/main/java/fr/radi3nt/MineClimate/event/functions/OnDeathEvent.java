@@ -1,12 +1,12 @@
-package fr.radi3nt.MineClimate.event;
+package fr.radi3nt.MineClimate.event.functions;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import static fr.radi3nt.MineClimate.ClimateAPI.*;
-import static fr.radi3nt.MineClimate.timer.Runner.DieBar;
+import static fr.radi3nt.MineClimate.ClimateAPI.getTemperatureFromPlayer;
+import static fr.radi3nt.MineClimate.ClimateAPI.getThirstFromPlayer;
 
 public class OnDeathEvent implements Listener {
 
