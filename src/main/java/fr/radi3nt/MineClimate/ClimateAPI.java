@@ -1,13 +1,18 @@
 package fr.radi3nt.MineClimate;
 
 import fr.radi3nt.MineClimate.classes.Priority;
+import fr.radi3nt.MineClimate.classes.Season;
+import fr.radi3nt.MineClimate.classes.enchants.CustomsEnchants;
+import fr.radi3nt.MineClimate.classes.enchants.EnchantmentWarper;
+import fr.radi3nt.MineClimate.classes.enchants.Glow;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_15_R1.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -21,10 +26,13 @@ import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.DecimalFormat;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static fr.radi3nt.MineClimate.timer.Runner.DieBar;
+import static fr.radi3nt.MineClimate.timer.SeasonThread.SeasonValue;
+import static fr.radi3nt.MineClimate.timer.SeasonThread.TimeForSeasons;
 
 public class ClimateAPI {
 
@@ -229,7 +237,7 @@ public class ClimateAPI {
         setBlockedPriorityForPlayer(player, null);
     }
 
-    public static void resetPlayerThirst(Player player) {
+    public static void resetPlayer(Player player) {
         setThirst(player, MaxThirst);
         setCooldown(player, MaxCooldown * TickValue);
         setTemperature(player, 0D);
@@ -441,7 +449,42 @@ public class ClimateAPI {
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(TemperatureItemName);
         item.setItemMeta(itemMeta);
-        item.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
+        Glow glow = new Glow(new NamespacedKey(plugin, "glow"));
+        item.addUnsafeEnchantment(glow, 0);
         return item;
     }
+
+    public static ItemStack createSeasonClock() {
+        ItemStack itemStack = new ItemStack(Material.CLOCK);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(ChatColor.GOLD + "Season Clock: " + ChatColor.MAGIC + "Radi3ntlovepizza");
+        Glow glow = new Glow(new NamespacedKey(plugin, "glow"));
+        itemMeta.addEnchant(glow, 0, true);
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add("Show you the current season");
+        itemMeta.setLore(lore);
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
+    }
+
+
+    public static Season getCurrentSeason() {
+        return SeasonValue;
+    }
+
+    public static Integer getCurrentTimeLeftInSeason() {
+        return 24000*20 - TimeForSeasons/24000*20;
+    }
+
+    public static void setCurrentSeason(Season season) {
+        SeasonValue = season;
+    }
+    public static void setCurrentTimeLeftInSeason(Integer Time) {
+        if (Time>=0 && Time <= 24000*20) {
+            TimeForSeasons = Time;
+        }
+    }
+
+
+
 }

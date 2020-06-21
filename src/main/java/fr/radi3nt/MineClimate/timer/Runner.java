@@ -22,11 +22,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static fr.radi3nt.MineClimate.ClimateAPI.*;
 import static fr.radi3nt.MineClimate.event.ClickOnWater.CooldownFromDrinking;
+import static fr.radi3nt.MineClimate.timer.SeasonThread.SeasonValue;
+import static fr.radi3nt.MineClimate.timer.SeasonThread.TimeForSeasons;
 import static org.bukkit.Bukkit.getServer;
 
 public class Runner extends BukkitRunnable {
@@ -107,10 +110,10 @@ public class Runner extends BukkitRunnable {
 
                                         if (testLore.equals(TemperatureEnchant) || armorpiece.getItemMeta().getLore().contains(ChatColor.GOLD + "Ozzy Liner combined")) {
                                             if (getTemperatureFromPlayer(player) > 0) {
-                                                setTemperature(player, getTemperatureFromPlayer(player) - 0.2);
+                                                setTemperature(player, getTemperatureFromPlayer(player) - 0.07);
                                             }
                                             if (getTemperatureFromPlayer(player) < 0) {
-                                                setTemperature(player, getTemperatureFromPlayer(player) + 0.2);
+                                                setTemperature(player, getTemperatureFromPlayer(player) + 0.07);
                                             }
                                         }
                                     }
@@ -118,6 +121,7 @@ public class Runner extends BukkitRunnable {
                             }
                         }
                     }
+
 
 
                     // Hot block \\
@@ -167,17 +171,44 @@ public class Runner extends BukkitRunnable {
                             checkedMaterials.put(type, checkedMaterials.getOrDefault(type, 1) + 1);
                         }
                     }
-
-
                 }
+                double relativeSeasonTemperature = 0;
+                double relativeSeasonTime = 0;
+
+                if (TimeForSeasons<24000*20/2) {
+                    relativeSeasonTime = ((float) TimeForSeasons/((float)24000*20/2));
+                } else {
+                    relativeSeasonTime = ((float) 24000*20/2 - TimeForSeasons/((float)24000*20/2));
+                }
+                //relativeSeasonTime is on 1 so ...
+                switch (getCurrentSeason()) {
+                    case SPRING:
+                        relativeSeasonTemperature = relativeSeasonTime*0.3;
+                        break;
+                    case SUMMER:
+                        relativeSeasonTemperature = relativeSeasonTime*0.5;
+                        break;
+                    case AUTUMN:
+                        relativeSeasonTemperature = -relativeSeasonTime*0.3;
+                        break;
+                    case WINTER:
+                        relativeSeasonTemperature = -relativeSeasonTime*0.5;
+                        break;
+                }
+                //We have our season value !
+
+
+
+
                 if (ticks - interval1 * 20 == 20) {
+                    setTemperature(player, getTemperatureFromPlayer(player) + relativeSeasonTemperature);
                     if (!isday(player)) {
-                        setTemperature(player, getTemperatureFromPlayer(player) - NightShift * 2 + (NegativeSeasonValue));
+                        setTemperature(player, getTemperatureFromPlayer(player) - NightShift * 2);
                     } else {
                         if (player.getLocation().getWorld().getTime() > 3500 && player.getLocation().getWorld().getTime() < 9500) {
                             Location location = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getWorld().getHighestBlockYAt(player.getLocation()), player.getLocation().getBlockZ());
                             if (player.getLocation().getWorld().getHighestBlockYAt(player.getLocation()) < player.getLocation().getBlockY() || location.getBlock().getType().equals(Material.GLASS) || location.getBlock().getType().equals(Material.BARRIER)) {
-                                setTemperature(player, getTemperatureFromPlayer(player) - DayShift + (NegativeSeasonValue));
+                                setTemperature(player, getTemperatureFromPlayer(player) - DayShift);
                             }
                         }
                     }
@@ -252,7 +283,7 @@ public class Runner extends BukkitRunnable {
                                 contents[x].setItemMeta(armorMeta);
                                 for (int z = 0; z < player.getInventory().getArmorContents().length; z++) {
                                     ItemStack[] armor = player.getInventory().getArmorContents();
-                                    if (armor[z]!=null) {
+                                    if (armor[z] != null) {
                                         if (armor[z].isSimilar(contents[x])) {
                                             armor[z].setType(Material.AIR);
                                             player.getInventory().setArmorContents(armor);
@@ -261,6 +292,10 @@ public class Runner extends BukkitRunnable {
                                     }
                                 }
                             }
+                        }
+                        if (contents[x].getType().equals(Material.CLOCK) && itemMeta.getDisplayName().contains(ChatColor.GOLD + "Season Clock: ")) {
+                            itemMeta.setDisplayName(ChatColor.GOLD + "Season Clock: " + ChatColor.GREEN + ChatColor.BOLD + SeasonValue.toString().toLowerCase().trim());
+                            contents[x].setItemMeta(itemMeta);
                         }
                     }
                 }

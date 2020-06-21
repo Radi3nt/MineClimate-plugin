@@ -91,7 +91,8 @@ public class ConsumeItemEvent implements Listener {
                                 }
                                 e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 1F, 1F);
                                 e.getPlayer().getInventory().setItemInMainHand(finaly);
-                        } else {
+                                e.getPlayer().updateInventory();
+                            } else {
                             addThirst(e.getPlayer(), 4);
                             poisonCompact(e.getPlayer(), 59);
                         }

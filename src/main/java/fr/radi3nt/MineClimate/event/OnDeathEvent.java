@@ -22,7 +22,6 @@ public class OnDeathEvent implements Listener {
                 e.setDeathMessage(e.getEntity().getDisplayName() + " died from thirst");
             }
         }
-        resetPlayerThirst(player);
     }
 
 }

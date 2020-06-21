@@ -111,7 +111,10 @@ public class ClickOnWater implements Listener {
                                     } else {
                                         finaly.setItemMeta(createGourd(percentage, reaming).getItemMeta());
                                     }
-                                    e.getPlayer().getInventory().setItemInMainHand(finaly);
+                                    player.playSound(player.getLocation(), Sound.ITEM_BUCKET_FILL, SoundCategory.PLAYERS, 100, 1);
+                                    player.getInventory().setItemInMainHand(finaly);
+                                    player.updateInventory();
+
                                 }
                             }
                         }
