@@ -1,14 +1,15 @@
 package fr.radi3nt.MineClimate.timer;
 
 import fr.radi3nt.MineClimate.classes.Priority;
+import fr.radi3nt.MineClimate.classes.models.Season;
+import fr.radi3nt.MineClimate.classes.models.Weather;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +34,7 @@ public class Runner extends BukkitRunnable {
     private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 
     public static HashMap<Player, Integer> DieBar = new HashMap<>();
-    public static HashMap<Player, ArrayList<ArmorStand>> ArmorMap = new HashMap<>();
+    public static HashMap<Player, ArrayList<FallingBlock>> ArmorMap = new HashMap<>();
 
     static int NegativeSeasonValue = 0;
 
@@ -47,13 +48,14 @@ public class Runner extends BukkitRunnable {
 
     int ticks = 0;
 
+    public static Weather CurrentWeather;
 
 
     @Override
     public void run() {
         ArrayList<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
         for (Player player : players) {
-            if (player.getGameMode()!= GameMode.CREATIVE && player.getGameMode()!= GameMode.SPECTATOR) {
+            if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
 
                 setupPlayerThirst(player);
 
@@ -72,14 +74,14 @@ public class Runner extends BukkitRunnable {
                         player.damage(getTemperatureFromPlayer(player) / 4);
                         player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20, 3, true, false));
                     }
-                    if (getTemperatureFromPlayer(player) > 9 && getTemperatureFromPlayer(player) < 10) {
+                    if (getTemperatureFromPlayer(player) > 9) {
                         player.setFireTicks(20);
                     }
                     if (getTemperatureFromPlayer(player) < -6) {
                         player.damage(getTemperatureFromPlayer(player) * -1 / 4);
                         Location playerloc = new Location(player.getLocation().getWorld(), player.getLocation().getX(), player.getLocation().getY() - 0.5, player.getLocation().getZ());
                     }
-                    if (getTemperatureFromPlayer(player) < -9 && getTemperatureFromPlayer(player) > -10) {
+                    if (getTemperatureFromPlayer(player) < -9) {
                         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 3, true, false));
                     }
                     // LOGICAL \\
@@ -135,87 +137,12 @@ public class Runner extends BukkitRunnable {
                     hotMaterials.put(Material.SEA_LANTERN, -0.3);
                     Double furnaceHeat = 0.25;
 
-                    HashMap<Material, Integer> checkedMaterials = new HashMap<>();
-                    for (Location blockloc : generateSphere(player.getLocation(), 6)) {
-                        Material type = blockloc.getBlock().getType();
-                        if (blockloc.getBlock().getType().equals(Material.FURNACE) || blockloc.getBlock().getType().equals(Material.BLAST_FURNACE)) {
-                            Furnace oldFurnace = (Furnace) blockloc.getBlock().getState();
-                            if (oldFurnace.getBurnTime() != 0) {
-                                int number = blocksFromTwoPoints(player.getLocation().getBlock().getLocation(), blockloc.getBlock().getLocation()).size();
-
-                                if (player.isSneaking()) {
-                                    setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
-                                    setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
-                                } else {
-                                    setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
-                                    setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
-                                }
-                                checkedMaterials.put(type, checkedMaterials.getOrDefault(type, 1) + 1);
-                            }
-                        }
-                        if (hotMaterials.containsKey(type)) {
-                            int number = blocksFromTwoPoints(player.getLocation().getBlock().getLocation(), blockloc.getBlock().getLocation()).size();
-
-                            if (player.isSneaking()) {
-                                setTemperature(player, getTemperatureFromPlayer(player) + hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
-                                setCooldown(player, getCooldownFromPlayer(player) - hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
-                            } else {
-                                setTemperature(player, getTemperatureFromPlayer(player) + hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 4));
-                                setCooldown(player, getCooldownFromPlayer(player) - hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 4));
-                            }
-                            checkedMaterials.put(type, checkedMaterials.getOrDefault(type, 1) + 1);
-                        }
-                    }
-                }
-
-                if (getTemperatureFromPlayer(player) < -6) {
-                    if (!ArmorMap.containsKey(player)) {
-                        ArrayList<ArmorStand> armorlist = new ArrayList<>();
-                        ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
-                        armorStand.setCollidable(false);
-                        armorStand.setInvulnerable(true);
-                        armorStand.setGravity(false);
-                        armorStand.setSilent(true);
-                        armorStand.setAI(false);
-                        armorStand.setVisible(false);
-                        armorStand.setHelmet(new ItemStack(Material.ICE));
-                        armorlist.add(armorStand);
-                        armorlist.add(armorStand);
-                        ArmorMap.put(player, armorlist);
-                    }
-                } else {
-                    if (ArmorMap.containsKey(player)) {
-                        ArmorMap.get(player).get(0).remove();
-                        ArmorMap.get(player).get(1).remove();
-                        ArmorMap.remove(player);
-                    }
+                    checkHotBlockAroundPlayer(player, hotMaterials, furnaceHeat);
                 }
 
 
                 // Seasons \\
-                double relativeSeasonTemperature = 0;
-                double relativeSeasonTime = 0;
-
-                if (TimeForSeasons < 24000 * 20 / 2) {
-                    relativeSeasonTime = ((float) TimeForSeasons / ((float) 24000 * 20 / 2));
-                } else {
-                    relativeSeasonTime = ((float) 24000 * 20 / 2 - TimeForSeasons / ((float) 24000 * 20 / 2));
-                }
-                //relativeSeasonTime is on 1 so ...
-                switch (getCurrentSeason()) {
-                    case SPRING:
-                        relativeSeasonTemperature = relativeSeasonTime * 0.1;
-                        break;
-                    case SUMMER:
-                        relativeSeasonTemperature = relativeSeasonTime*0.5;
-                        break;
-                    case AUTUMN:
-                        relativeSeasonTemperature = -relativeSeasonTime * 0.1;
-                        break;
-                    case WINTER:
-                        relativeSeasonTemperature = -relativeSeasonTime*0.5;
-                        break;
-                }
+                double relativeSeasonTemperature = Season.getTemperatureForSeason(SeasonValue, TimeForSeasons);
                 //We have our season value !
 
 
@@ -292,6 +219,7 @@ public class Runner extends BukkitRunnable {
                 }
 
 
+                // Special Items \\
                 for (int x = 0; x < player.getInventory().getContents().length; x++) {
                     ItemStack[] contents = player.getInventory().getContents();
                     if (contents[x] != null && contents[x].getItemMeta() != null) {
@@ -315,7 +243,7 @@ public class Runner extends BukkitRunnable {
                             }
                         }
                         if (contents[x].getType().equals(Material.CLOCK) && itemMeta.getDisplayName().contains(ChatColor.GOLD + "Season Clock: ")) {
-                            itemMeta.setDisplayName(ChatColor.GOLD + "Season Clock: " + ChatColor.GREEN + ChatColor.BOLD + SeasonValue.toString().toLowerCase().trim());
+                            itemMeta.setDisplayName(ChatColor.GOLD + "Season Clock: " + ChatColor.BOLD + SeasonValue.toString());
                             contents[x].setItemMeta(itemMeta);
                         }
                     }
@@ -341,17 +269,28 @@ public class Runner extends BukkitRunnable {
                     e.printStackTrace();
                 }
             }
-
-
-
         }
-        if (ticks-interval*10 == 10) {
+        if (players.size() != 0) {
+            World world = players.get(0).getLocation().getWorld();
+            boolean shouldProgressDay = world.getTime() >= 23850 && world.getTime() > 0 && !isday(players.get(0));
+            boolean shouldProgressNight = isday(players.get(0)) && world.getTime() >= 12300 && world.getTime() < 12400;
+            boolean isUnregisteredDay = isday(players.get(0)) && world.getTime() > 12300 && world.getTime() < 23850;
+            boolean isUnregisteredNight = isday(players.get(0)) && world.getTime() > 0 && world.getTime() < 12300;
+
+            // If the world is entering night and not already handled
+            if (shouldProgressNight || isUnregisteredDay) {
+                newNight();
+            } else if (isUnregisteredNight || shouldProgressDay) {
+                newDay(world);
+            }
+        }
+        if (ticks - interval * 10 == 10) {
             interval++;
         }
-        if (ticks-interval1*20 == 20) {
+        if (ticks - interval1 * 20 == 20) {
             interval1++;
         }
-        if (ticks-interval2*60 == 60) {
+        if (ticks - interval2 * 60 == 60) {
             interval2++;
         }
         ticks++;
@@ -364,14 +303,61 @@ public class Runner extends BukkitRunnable {
                 blue++;
             }
         } else {
-            if (red>=255) {
-                ascend=false;
+            if (red >= 255) {
+                ascend = false;
             } else {
                 red++;
-                blue=blue-1;
+                blue = blue - 1;
             }
         }
 
+    }
+
+    private void newDay(World world) {
+        CurrentWeather = Weather.randomWeather(SeasonValue);
+        updateWeather(CurrentWeather, world);
+    }
+
+    private void updateWeather(Weather Weather, World world) {
+        world.setStorm(Weather.isStorm());
+    }
+
+    private void newNight() {
+        CurrentWeather = Weather.NIGHT;
+    }
+
+    private void checkHotBlockAroundPlayer(Player player, HashMap<Material, Double> hotMaterials, Double furnaceHeat) {
+        HashMap<Material, Integer> checkedMaterials = new HashMap<>();
+        for (Location blockloc : generateSphere(player.getLocation(), 6)) {
+            Material type = blockloc.getBlock().getType();
+            if (blockloc.getBlock().getType().equals(Material.FURNACE) || blockloc.getBlock().getType().equals(Material.BLAST_FURNACE)) {
+                Furnace oldFurnace = (Furnace) blockloc.getBlock().getState();
+                if (oldFurnace.getBurnTime() != 0) {
+                    int number = blocksFromTwoPoints(player.getLocation().getBlock().getLocation(), blockloc.getBlock().getLocation()).size();
+
+                    if (player.isSneaking()) {
+                        setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
+                        setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
+                    } else {
+                        setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
+                        setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
+                    }
+                    checkedMaterials.put(type, checkedMaterials.getOrDefault(type, 1) + 1);
+                }
+            }
+            if (hotMaterials.containsKey(type)) {
+                int number = blocksFromTwoPoints(player.getLocation().getBlock().getLocation(), blockloc.getBlock().getLocation()).size();
+
+                if (player.isSneaking()) {
+                    setTemperature(player, getTemperatureFromPlayer(player) + hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
+                    setCooldown(player, getCooldownFromPlayer(player) - hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
+                } else {
+                    setTemperature(player, getTemperatureFromPlayer(player) + hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 4));
+                    setCooldown(player, getCooldownFromPlayer(player) - hotMaterials.get(type) / (number * checkedMaterials.getOrDefault(type, 1) * 4));
+                }
+                checkedMaterials.put(type, checkedMaterials.getOrDefault(type, 1) + 1);
+            }
+        }
     }
 
     public static ArrayList<Location> generateSphere(Location center, int radius) {

@@ -1,9 +1,11 @@
 package fr.radi3nt.MineClimate;
 
-import fr.radi3nt.MineClimate.classes.Season;
 import fr.radi3nt.MineClimate.classes.enchants.CustomsEnchants;
 import fr.radi3nt.MineClimate.classes.enchants.Glow;
-import fr.radi3nt.MineClimate.event.*;
+import fr.radi3nt.MineClimate.classes.models.Season;
+import fr.radi3nt.MineClimate.event.ClickOnWater;
+import fr.radi3nt.MineClimate.event.ConsumeItemEvent;
+import fr.radi3nt.MineClimate.event.OnRegenerateEvent;
 import fr.radi3nt.MineClimate.event.crafts.CraftPurifiedBottle;
 import fr.radi3nt.MineClimate.event.crafts.OnCraftEvent;
 import fr.radi3nt.MineClimate.event.crafts.PrepareItemCraftEvent;
@@ -139,12 +141,10 @@ public final class MainMineClimate extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OnPlayerDisconnect(), this);
         getServer().getPluginManager().registerEvents(new OnDeathEvent(), this);
         getServer().getPluginManager().registerEvents(new OnRespawnEvent(), this);
-        getServer().getPluginManager().registerEvents(new PlayerArmorStandManipulateEvent(), this);
 
 
         getServer().getPluginManager().registerEvents(new OnRegenerateEvent(), this);
 
-        getServer().getPluginManager().registerEvents(new OnPlayerMoveEvent(), this);
 
 
         getServer().getPluginManager().registerEvents(new ClickOnWater(), this);

@@ -1,6 +1,6 @@
 package fr.radi3nt.MineClimate.timer;
 
-import fr.radi3nt.MineClimate.classes.Season;
+import fr.radi3nt.MineClimate.classes.models.Season;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,24 +30,7 @@ public class SeasonThread extends BukkitRunnable {
         loc.set("Season.time", TimeForSeasons);
 
         if (TimeForSeasons==24000*20) {
-            switch (SeasonValue) {
-                case SPRING:
-                    SeasonValue = Season.SUMMER;
-                    TimeForSeasons = 0;
-                    break;
-                case SUMMER:
-                    SeasonValue = Season.AUTUMN;
-                    TimeForSeasons = 0;
-                    break;
-                case AUTUMN:
-                    SeasonValue = Season.WINTER;
-                    TimeForSeasons = 0;
-                    break;
-                case WINTER:
-                    SeasonValue = Season.SPRING;
-                    TimeForSeasons = 0;
-                    break;
-            }
+            SeasonValue = Season.next(SeasonValue);
         } else {
             TimeForSeasons++;
         }

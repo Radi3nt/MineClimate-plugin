@@ -1,10 +1,8 @@
 package fr.radi3nt.MineClimate;
 
 import fr.radi3nt.MineClimate.classes.Priority;
-import fr.radi3nt.MineClimate.classes.Season;
-import fr.radi3nt.MineClimate.classes.enchants.CustomsEnchants;
-import fr.radi3nt.MineClimate.classes.enchants.EnchantmentWarper;
 import fr.radi3nt.MineClimate.classes.enchants.Glow;
+import fr.radi3nt.MineClimate.classes.models.Season;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
@@ -12,7 +10,6 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +23,6 @@ import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.DecimalFormat;
-import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -38,11 +34,11 @@ public class ClimateAPI {
 
     public static Plugin plugin = MainMineClimate.getPlugin(MainMineClimate.class);
 
-    private static HashMap<Player, Integer> ThirstBar = new HashMap<>();
-    private static HashMap<Player, Double> Cooldown = new HashMap<>();
-    private static HashMap<Player, Double> Temperature = new HashMap<>();
+    private static final HashMap<Player, Integer> ThirstBar = new HashMap<>();
+    private static final HashMap<Player, Double> Cooldown = new HashMap<>();
+    private static final HashMap<Player, Double> Temperature = new HashMap<>();
 
-    private static HashMap<Player, Priority> BlockedPriority = new HashMap<>();
+    private static final HashMap<Player, Priority> BlockedPriority = new HashMap<>();
 
     public final static String TemperatureEnchant = "AmbientAdapt";
     public final static String TemperatureItemName = ChatColor.GOLD + "Ozzy Liner";
@@ -217,10 +213,7 @@ public class ClimateAPI {
         if (priority == Priority.MEDIUM && getBlockedPriorityFromPlayer(player) == Priority.HIGH || getBlockedPriorityFromPlayer(player) == Priority.MEDIUM) {
             return true;
         }
-        if (priority == Priority.HIGH && getBlockedPriorityFromPlayer(player) == Priority.HIGH) {
-            return true;
-        }
-        return false;
+        return priority == Priority.HIGH && getBlockedPriorityFromPlayer(player) == Priority.HIGH;
     }
 
 
