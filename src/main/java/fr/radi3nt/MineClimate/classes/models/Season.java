@@ -7,20 +7,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static fr.radi3nt.MineClimate.ClimateAPI.getCurrentSeason;
-
 public enum Season {
-    SPRING("Spring", ChatColor.GREEN),
-    SUMMER("Summer", ChatColor.DARK_GREEN),
-    AUTUMN("Autumn", ChatColor.YELLOW),
-    WINTER("Winter", ChatColor.WHITE);
+    SPRING("Spring", ChatColor.GREEN, 70),
+    SUMMER("Summer", ChatColor.DARK_GREEN, 10),
+    AUTUMN("Autumn", ChatColor.YELLOW, 45),
+    WINTER("Winter", ChatColor.WHITE, 80);
 
     private final String name;
+    private final int chanceToRain;
     private final ChatColor color;
 
-    Season(String name, ChatColor color) {
+    Season(String name, ChatColor color, Integer chanceToRain) {
         this.name = name;
         this.color = color;
+        this.chanceToRain = chanceToRain;
     }
 
     public static Season next(Season currentSeason) {
@@ -35,6 +35,7 @@ public enum Season {
         }
     }
 
+
     public static List<String> getSeasonsList() {
         List<String> list = new ArrayList<>();
         for (Season season : Season.values()) {
@@ -43,17 +44,44 @@ public enum Season {
         return list;
     }
 
-    public static Double getTemperatureForSeason(Season season, Integer time) {
+    public static Double getTemperatureForSeasonByTime(Season season, Integer time) {
         double relativeSeasonTemperature = 0;
         double relativeSeasonTime = 0;
 
-        if (time < 24000 * 20 / 2) {
-            relativeSeasonTime = ((float) time / ((float) 24000 * 20 / 2));
+        if (time < 24000 * 31 / 2) {
+            relativeSeasonTime = ((float) time / ((float) 24000 * 31 / 2));
         } else {
-            relativeSeasonTime = ((float) 24000 * 20 / 2 - time / ((float) 24000 * 20 / 2));
+            relativeSeasonTime = ((float) 24000 * 31 / 2 - time / ((float) 24000 * 31 / 2));
         }
         //relativeSeasonTime is on 1 so ...
-        switch (getCurrentSeason()) {
+        switch (season) {
+            case SPRING:
+                relativeSeasonTemperature = relativeSeasonTime * 0.1;
+                break;
+            case SUMMER:
+                relativeSeasonTemperature = relativeSeasonTime * 0.5;
+                break;
+            case AUTUMN:
+                relativeSeasonTemperature = -relativeSeasonTime * 0.1;
+                break;
+            case WINTER:
+                relativeSeasonTemperature = -relativeSeasonTime * 0.5;
+                break;
+        }
+        return relativeSeasonTemperature;
+    }
+
+    public static Double getTemperatureForSeasonByDay(Season season, Integer day) {
+        double relativeSeasonTemperature = 0;
+        double relativeSeasonTime = 0;
+
+        if (day < 31 * 4 / 2) {
+            relativeSeasonTime = ((float) day / ((float) 31 * 4 / 2));
+        } else {
+            relativeSeasonTime = ((float) 31 * 4 / 2 - day / ((float) 31 * 4 / 2));
+        }
+        //relativeSeasonTime is on 1 so ...
+        switch (season) {
             case SPRING:
                 relativeSeasonTemperature = relativeSeasonTime * 0.1;
                 break;
@@ -76,6 +104,10 @@ public enum Season {
 
     public ChatColor getColor() {
         return color;
+    }
+
+    public Integer getChanceToRain() {
+        return chanceToRain;
     }
 
     @Override

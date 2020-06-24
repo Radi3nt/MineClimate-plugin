@@ -2,7 +2,6 @@ package fr.radi3nt.MineClimate;
 
 import fr.radi3nt.MineClimate.classes.Priority;
 import fr.radi3nt.MineClimate.classes.enchants.Glow;
-import fr.radi3nt.MineClimate.classes.models.Season;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
@@ -27,8 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static fr.radi3nt.MineClimate.timer.Runner.DieBar;
-import static fr.radi3nt.MineClimate.timer.SeasonThread.SeasonValue;
-import static fr.radi3nt.MineClimate.timer.SeasonThread.TimeForSeasons;
 
 public class ClimateAPI {
 
@@ -65,8 +62,8 @@ public class ClimateAPI {
     public final static int DieInterval = 3;
     public final static double DieBaseDamage = 1;
 
-    public final static int MaxThirstBarDisplay = 100;
-    public final static int MaxTemperatureBarDisplay = 100;
+    public final static int MaxThirstBarDisplay = 75;
+    public final static int MaxTemperatureBarDisplay = 75;
 
     public final static int TickValue = 20;
 
@@ -459,25 +456,6 @@ public class ClimateAPI {
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
-
-
-    public static Season getCurrentSeason() {
-        return SeasonValue;
-    }
-
-    public static Integer getCurrentTimeLeftInSeason() {
-        return 24000*20 - TimeForSeasons/24000*20;
-    }
-
-    public static void setCurrentSeason(Season season) {
-        SeasonValue = season;
-    }
-    public static void setCurrentTimeLeftInSeason(Integer Time) {
-        if (Time>=0 && Time <= 24000*20) {
-            TimeForSeasons = Time;
-        }
-    }
-
 
 
 }

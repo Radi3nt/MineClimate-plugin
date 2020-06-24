@@ -2,7 +2,6 @@ package fr.radi3nt.MineClimate.timer;
 
 import fr.radi3nt.MineClimate.classes.Priority;
 import fr.radi3nt.MineClimate.classes.models.Season;
-import fr.radi3nt.MineClimate.classes.models.Weather;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
@@ -26,8 +25,7 @@ import java.util.HashMap;
 
 import static fr.radi3nt.MineClimate.ClimateAPI.*;
 import static fr.radi3nt.MineClimate.event.ClickOnWater.CooldownFromDrinking;
-import static fr.radi3nt.MineClimate.timer.SeasonThread.SeasonValue;
-import static fr.radi3nt.MineClimate.timer.SeasonThread.TimeForSeasons;
+import static fr.radi3nt.MineClimate.timer.SeasonThread.*;
 
 public class Runner extends BukkitRunnable {
 
@@ -47,8 +45,6 @@ public class Runner extends BukkitRunnable {
     static boolean ascend = false;
 
     int ticks = 0;
-
-    public static Weather CurrentWeather;
 
 
     @Override
@@ -96,12 +92,27 @@ public class Runner extends BukkitRunnable {
                         setTemperature(player, getTemperatureFromPlayer(player) - RainShift * 2 + (NegativeSeasonValue));
                     }
 
+                    // Hot block \\
+                    HashMap<Material, Double> hotMaterials = new HashMap<>();
+                    hotMaterials.put(Material.TORCH, 0.01);
+                    hotMaterials.put(Material.WALL_TORCH, 0.01);
+                    hotMaterials.put(Material.CARVED_PUMPKIN, 0.02);
+                    hotMaterials.put(Material.CAMPFIRE, 0.2);
+                    hotMaterials.put(Material.FIRE, 0.2);
+                    hotMaterials.put(Material.BEACON, 0.07);
+                    hotMaterials.put(Material.MAGMA_BLOCK, 0.5);
+                    hotMaterials.put(Material.NETHER_PORTAL, 0.5);
+                    hotMaterials.put(Material.LAVA, 1D);
+                    hotMaterials.put(Material.SEA_LANTERN, -0.3);
+                    Double furnaceHeat = 0.25;
+                    checkHotBlockAroundPlayer(player, hotMaterials, furnaceHeat);
+
                     ItemStack[] armor = player.getInventory().getArmorContents();
                     for (ItemStack armorpiece : armor) {
                         if (armorpiece != null && !armorpiece.getType().equals(Material.AIR)) {
                             if (armorpiece.hasItemMeta()) {
                                 if (armorpiece.getItemMeta().hasLore()) {
-                                    for (int i = 0;i<armorpiece.getItemMeta().getLore().size();i++) {
+                                    for (int i = 0; i < armorpiece.getItemMeta().getLore().size(); i++) {
                                         String[] fLore = ChatColor.stripColor(armorpiece.getItemMeta().getLore().get(i)).split(" ");
                                         String testLore = fLore[0];
 
@@ -118,48 +129,16 @@ public class Runner extends BukkitRunnable {
                             }
                         }
                     }
-
-
-
-                    // Hot block \\
-                    HashMap<Material, Double> hotMaterials = new HashMap<>();
-                    hotMaterials.put(Material.TORCH, 0.01);
-                    hotMaterials.put(Material.WALL_TORCH, 0.01);
-                    hotMaterials.put(Material.CARVED_PUMPKIN, 0.02);
-                    hotMaterials.put(Material.CAMPFIRE, 0.2);
-                    hotMaterials.put(Material.FIRE, 0.2);
-                    hotMaterials.put(Material.BEACON, 0.07);
-                    hotMaterials.put(Material.MAGMA_BLOCK, 0.5);
-                    hotMaterials.put(Material.NETHER_PORTAL, 0.5);
-                    hotMaterials.put(Material.LAVA, 1D);
-
-
-                    hotMaterials.put(Material.SEA_LANTERN, -0.3);
-                    Double furnaceHeat = 0.25;
-
-                    checkHotBlockAroundPlayer(player, hotMaterials, furnaceHeat);
                 }
 
 
                 // Seasons \\
-                double relativeSeasonTemperature = Season.getTemperatureForSeason(SeasonValue, TimeForSeasons);
+                double relativeSeasonTemperature = Season.getTemperatureForSeasonByTime(getCurrentSeason(), getTimeInSeason());
                 //We have our season value !
-
-
-
 
                 if (ticks - interval1 * 20 == 20) {
                     setTemperature(player, getTemperatureFromPlayer(player) + relativeSeasonTemperature);
-                    if (!isday(player)) {
-                        setTemperature(player, getTemperatureFromPlayer(player) - NightShift * 2);
-                    } else {
-                        if (player.getLocation().getWorld().getTime() > 3500 && player.getLocation().getWorld().getTime() < 9500) {
-                            Location location = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX(), player.getLocation().getWorld().getHighestBlockYAt(player.getLocation()), player.getLocation().getBlockZ());
-                            if (player.getLocation().getWorld().getHighestBlockYAt(player.getLocation()) < player.getLocation().getBlockY() || location.getBlock().getType().equals(Material.GLASS) || location.getBlock().getType().equals(Material.BARRIER)) {
-                                setTemperature(player, getTemperatureFromPlayer(player) - DayShift);
-                            }
-                        }
-                    }
+                    setTemperature(player, getTemperatureFromPlayer(player) + CurrentWeather.getTemperature());
                 }
                 if (ticks - interval2 * 60 == 60) {
                     ItemStack[] armor = player.getInventory().getArmorContents();
@@ -174,8 +153,6 @@ public class Runner extends BukkitRunnable {
                         }
                     }
                 }
-
-
                 if (getTemperatureFromPlayer(player) > 10) {
                     setTemperature(player, 10D);
                 }
@@ -243,7 +220,7 @@ public class Runner extends BukkitRunnable {
                             }
                         }
                         if (contents[x].getType().equals(Material.CLOCK) && itemMeta.getDisplayName().contains(ChatColor.GOLD + "Season Clock: ")) {
-                            itemMeta.setDisplayName(ChatColor.GOLD + "Season Clock: " + ChatColor.BOLD + SeasonValue.toString());
+                            itemMeta.setDisplayName(ChatColor.GOLD + "Season Clock: " + ChatColor.BOLD + getCurrentSeason().toString());
                             contents[x].setItemMeta(itemMeta);
                         }
                     }
@@ -268,20 +245,6 @@ public class Runner extends BukkitRunnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-        }
-        if (players.size() != 0) {
-            World world = players.get(0).getLocation().getWorld();
-            boolean shouldProgressDay = world.getTime() >= 23850 && world.getTime() > 0 && !isday(players.get(0));
-            boolean shouldProgressNight = isday(players.get(0)) && world.getTime() >= 12300 && world.getTime() < 12400;
-            boolean isUnregisteredDay = isday(players.get(0)) && world.getTime() > 12300 && world.getTime() < 23850;
-            boolean isUnregisteredNight = isday(players.get(0)) && world.getTime() > 0 && world.getTime() < 12300;
-
-            // If the world is entering night and not already handled
-            if (shouldProgressNight || isUnregisteredDay) {
-                newNight();
-            } else if (isUnregisteredNight || shouldProgressDay) {
-                newDay(world);
             }
         }
         if (ticks - interval * 10 == 10) {
@@ -311,19 +274,6 @@ public class Runner extends BukkitRunnable {
             }
         }
 
-    }
-
-    private void newDay(World world) {
-        CurrentWeather = Weather.randomWeather(SeasonValue);
-        updateWeather(CurrentWeather, world);
-    }
-
-    private void updateWeather(Weather Weather, World world) {
-        world.setStorm(Weather.isStorm());
-    }
-
-    private void newNight() {
-        CurrentWeather = Weather.NIGHT;
     }
 
     private void checkHotBlockAroundPlayer(Player player, HashMap<Material, Double> hotMaterials, Double furnaceHeat) {

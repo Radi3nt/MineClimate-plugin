@@ -38,8 +38,7 @@ import java.util.ArrayList;
 
 import static fr.radi3nt.MineClimate.ClimateAPI.*;
 import static fr.radi3nt.MineClimate.timer.Runner.ArmorMap;
-import static fr.radi3nt.MineClimate.timer.SeasonThread.SeasonValue;
-import static fr.radi3nt.MineClimate.timer.SeasonThread.TimeForSeasons;
+import static fr.radi3nt.MineClimate.timer.SeasonThread.*;
 
 public final class MainMineClimate extends JavaPlugin {
 
@@ -127,8 +126,9 @@ public final class MainMineClimate extends JavaPlugin {
         SeasonThread seasonThread = new SeasonThread();
         seasonThread.runTaskTimer(plugin, 1L, 1L);
         if (loc.get("Season")!=null) {
-            SeasonValue = Season.valueOf(loc.getString("Season.season"));
-            TimeForSeasons = loc.getInt("Season.time");
+            setCurrentSeason(Season.valueOf(loc.getString("Season.season")));
+            setCurrentTimeInSeason(loc.getInt("Season.time"));
+            setDayInSeason(loc.getInt("Season.day"));
         }
     }
 

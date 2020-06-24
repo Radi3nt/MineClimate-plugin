@@ -6,39 +6,39 @@ public enum Weather {
 
     BEAUTIFUL("Beautiful",
             false, false,
-            Arrays.asList(Season.SPRING, Season.SUMMER)),
+            Arrays.asList(Season.SPRING, Season.SUMMER), 0.02),
     BREEZY("Breezy",
             false, false,
-            Arrays.asList(Season.SPRING, Season.AUTUMN)),
+            Arrays.asList(Season.SPRING, Season.AUTUMN), 0D),
     CHILLY("Chilly",
             false, false,
-            Collections.singletonList(Season.SPRING)),
+            Collections.singletonList(Season.SPRING), 0.01),
     RAINY("Rainy",
             false, true,
-            Arrays.asList(Season.SPRING, Season.AUTUMN, Season.WINTER)),
+            Arrays.asList(Season.SPRING, Season.AUTUMN, Season.WINTER), -0.02),
     SCORCHING("Scorching",
             false, false,
-            Collections.singletonList(Season.SUMMER)),
+            Collections.singletonList(Season.SUMMER), 0.5),
     HOT("Hot",
             false, false,
-            Collections.singletonList(Season.SUMMER)),
+            Collections.singletonList(Season.SUMMER), 0.2),
     WARM("Warm",
             false, false,
-            Collections.singletonList(Season.SUMMER)),
+            Collections.singletonList(Season.SUMMER), 0.03),
     COLD("Cold",
             false, false,
-            Arrays.asList(Season.AUTUMN, Season.WINTER)),
+            Arrays.asList(Season.AUTUMN, Season.WINTER), -0.03),
     STORMY("Stormy",
             true, true,
-            Collections.singletonList(Season.AUTUMN)),
+            Collections.singletonList(Season.AUTUMN), -0.02),
     FREEZING("Freezing",
             true, false,
-            Collections.singletonList(Season.WINTER)),
+            Collections.singletonList(Season.WINTER), -0.2),
     SNOWY("Snowy",
             false, true,
-            Collections.singletonList(Season.WINTER)),
+            Collections.singletonList(Season.WINTER), -0.1),
     NIGHT("Calm",
-            false, false);
+            false, false, -0.03);
 
     private static final Random random = new Random();
 
@@ -46,19 +46,22 @@ public enum Weather {
     private final boolean catastrophic; // Is there is a high risk of this weather killing a player?
     private final boolean storm;
     private final List<Season> seasons; // List of seasons this weather can be triggered on
+    private final Double temperature;
 
-    Weather(String name, boolean catastrophic, boolean storm, List<Season> seasons) {
+    Weather(String name, boolean catastrophic, boolean storm, List<Season> seasons, Double temperature) {
         this.name = name;
         this.catastrophic = catastrophic;
         this.storm = storm;
         this.seasons = seasons;
+        this.temperature = temperature;
     }
 
-    Weather(String name, boolean catastrophic, boolean storm) {
+    Weather(String name, boolean catastrophic, boolean storm, Double temperature) {
         this.name = name;
         this.catastrophic = catastrophic;
         this.storm = storm;
         this.seasons = Collections.emptyList();
+        this.temperature = temperature;
     }
 
     public static Weather fromName(String name) {
@@ -96,6 +99,10 @@ public enum Weather {
 
     public String getName() {
         return name;
+    }
+
+    public Double getTemperature() {
+        return temperature;
     }
 
     public boolean isCatastrophic() {
