@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 import static fr.radi3nt.MineClimate.ClimateAPI.*;
 import static fr.radi3nt.MineClimate.timer.Runner.ArmorMap;
-import static fr.radi3nt.MineClimate.timer.SeasonThread.*;
 
 public final class MainMineClimate extends JavaPlugin {
 
@@ -46,6 +45,8 @@ public final class MainMineClimate extends JavaPlugin {
     public static final String VERSION = "1.0";
     private final ConsoleCommandSender console = Bukkit.getConsoleSender();
     //--------------------------------------------------//
+
+    public static SeasonThread SEASON_THREAD;
 
 
     @Override
@@ -125,11 +126,13 @@ public final class MainMineClimate extends JavaPlugin {
         FileConfiguration loc = YamlConfiguration.loadConfiguration(locations);
         SeasonThread seasonThread = new SeasonThread();
         seasonThread.runTaskTimer(plugin, 1L, 1L);
+        SEASON_THREAD = seasonThread;
         if (loc.get("Season")!=null) {
-            setCurrentSeason(Season.valueOf(loc.getString("Season.season")));
-            setCurrentTimeInSeason(loc.getInt("Season.time"));
-            setDayInSeason(loc.getInt("Season.day"));
+            SEASON_THREAD.setCurrentSeason(Season.valueOf(loc.getString("Season.season")));
+            SEASON_THREAD.setCurrentTimeInSeason(loc.getInt("Season.time"));
+            SEASON_THREAD.setDayInSeason(loc.getInt("Season.day"));
         }
+
     }
 
     private void RegisterCommands() {

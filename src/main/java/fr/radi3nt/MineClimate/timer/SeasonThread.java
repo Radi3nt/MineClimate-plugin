@@ -15,32 +15,32 @@ import static fr.radi3nt.MineClimate.classes.models.Weather.randomWeather;
 
 public class SeasonThread extends BukkitRunnable {
 
-    public static Weather CurrentWeather = Weather.NIGHT;
-    private static Season SeasonValue = Season.SPRING;
-    private static int TimeForSeasons = 0;
-    private static int Day = 0;
+    public Weather CurrentWeather = Weather.NIGHT;
+    private Season SeasonValue = Season.SPRING;
+    private int TimeForSeasons = 0;
+    private int Day = 0;
 
-    public static Season getCurrentSeason() {
+    public Season getCurrentSeason() {
         return SeasonValue;
     }
 
-    public static void setCurrentSeason(Season season) {
+    public void setCurrentSeason(Season season) {
         SeasonValue = season;
     }
 
-    public static Integer getTimeInSeason() {
+    public Integer getTimeInSeason() {
         return TimeForSeasons;
     }
 
-    public static Integer getDayInSeason() {
+    public Integer getDayInSeason() {
         return Day;
     }
 
-    public static void setDayInSeason(Integer day) {
+    public void setDayInSeason(Integer day) {
         Day = day;
     }
 
-    public static void setCurrentTimeInSeason(Integer Time) {
+    public void setCurrentTimeInSeason(Integer Time) {
         if (Time >= 0 && Time <= 24000 * 20) {
             TimeForSeasons = Time;
         }

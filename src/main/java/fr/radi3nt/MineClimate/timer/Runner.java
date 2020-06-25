@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static fr.radi3nt.MineClimate.ClimateAPI.*;
+import static fr.radi3nt.MineClimate.MainMineClimate.SEASON_THREAD;
 import static fr.radi3nt.MineClimate.event.ClickOnWater.CooldownFromDrinking;
-import static fr.radi3nt.MineClimate.timer.SeasonThread.*;
 
 public class Runner extends BukkitRunnable {
 
@@ -133,12 +133,12 @@ public class Runner extends BukkitRunnable {
 
 
                 // Seasons \\
-                double relativeSeasonTemperature = Season.getTemperatureForSeasonByTime(getCurrentSeason(), getTimeInSeason());
+                double relativeSeasonTemperature = Season.getTemperatureForSeasonByTime(SEASON_THREAD.getCurrentSeason(), SEASON_THREAD.getTimeInSeason());
                 //We have our season value !
 
                 if (ticks - interval1 * 20 == 20) {
                     setTemperature(player, getTemperatureFromPlayer(player) + relativeSeasonTemperature);
-                    setTemperature(player, getTemperatureFromPlayer(player) + CurrentWeather.getTemperature());
+                    setTemperature(player, getTemperatureFromPlayer(player) + SEASON_THREAD.CurrentWeather.getTemperature());
                 }
                 if (ticks - interval2 * 60 == 60) {
                     ItemStack[] armor = player.getInventory().getArmorContents();
@@ -220,7 +220,7 @@ public class Runner extends BukkitRunnable {
                             }
                         }
                         if (contents[x].getType().equals(Material.CLOCK) && itemMeta.getDisplayName().contains(ChatColor.GOLD + "Season Clock: ")) {
-                            itemMeta.setDisplayName(ChatColor.GOLD + "Season Clock: " + ChatColor.BOLD + getCurrentSeason().toString());
+                            itemMeta.setDisplayName(ChatColor.GOLD + "Season Clock: " + ChatColor.BOLD + SEASON_THREAD.getCurrentSeason().toString());
                             contents[x].setItemMeta(itemMeta);
                         }
                     }
