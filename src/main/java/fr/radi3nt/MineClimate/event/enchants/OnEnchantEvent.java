@@ -1,7 +1,10 @@
 package fr.radi3nt.MineClimate.event.enchants;
 
+import fr.radi3nt.MineClimate.classes.enchants.CustomsEnchants;
+import net.minecraft.server.v1_15_R1.ItemSword;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,7 +24,13 @@ public class OnEnchantEvent implements Listener {
         ItemStack item = event.getItem();
         Material mat = item.getType();
         if (mat.equals(Material.DIAMOND_CHESTPLATE)) {
-            item.setItemMeta (addEnchantment (item, TemperatureEnchant, event.getExpLevelCost(), 10, 3));
+            item.setItemMeta(addEnchantment(item, TemperatureEnchant, event.getExpLevelCost(), 10, 3));
+        }
+        if (CraftItemStack.asNMSCopy(item).getItem() instanceof ItemSword) {
+            item.setItemMeta(addEnchantment(item, "Cold", event.getExpLevelCost(), 10, 1));
+            if (item.getItemMeta().getLore().contains("Cold")) {
+                item.addUnsafeEnchantment(CustomsEnchants.COLD, 1);
+            }
         }
     }
 

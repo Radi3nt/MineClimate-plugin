@@ -4,19 +4,18 @@ import org.bukkit.enchantments.Enchantment;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class CustomsEnchants {
 
-    public static final Enchantment GLOW = new EnchantmentWarper("glow", "", 1);
+    public static final Enchantment COLD = new EnchantmentWarper("cold", "cold", 1);
 
 
     public static void register() {
-        boolean registered = Arrays.stream(Enchantment.values()).collect(Collectors.toList()).contains(GLOW);
+        boolean registered = Arrays.stream(Enchantment.values()).collect(Collectors.toList()).contains(COLD);
 
         if (!registered) {
-            registerEnchantments(GLOW);
+            registerEnchantments(COLD);
         }
     }
 
