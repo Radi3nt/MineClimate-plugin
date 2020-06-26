@@ -6,6 +6,7 @@ import fr.radi3nt.MineClimate.classes.models.Season;
 import fr.radi3nt.MineClimate.event.ClickOnWater;
 import fr.radi3nt.MineClimate.event.ConsumeItemEvent;
 import fr.radi3nt.MineClimate.event.OnRegenerateEvent;
+import fr.radi3nt.MineClimate.event.StackEvent;
 import fr.radi3nt.MineClimate.event.crafts.CraftPurifiedBottle;
 import fr.radi3nt.MineClimate.event.crafts.OnCraftEvent;
 import fr.radi3nt.MineClimate.event.crafts.PrepareItemCraftEvent;
@@ -147,6 +148,7 @@ public final class MainMineClimate extends JavaPlugin {
 
 
         getServer().getPluginManager().registerEvents(new OnRegenerateEvent(), this);
+        getServer().getPluginManager().registerEvents(new StackEvent(), this);
 
 
 
