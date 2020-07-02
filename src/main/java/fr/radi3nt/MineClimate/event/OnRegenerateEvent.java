@@ -11,7 +11,7 @@ public class OnRegenerateEvent implements Listener {
 
     @EventHandler
     public void OnRegenerateEvent (EntityRegainHealthEvent e) {
-        if (e.getEntity() instanceof Player) {
+        if (e.getEntity() instanceof Player && !e.getEntity().isDead()) {
             Player player = (Player) e.getEntity();
             if (getThirstFromPlayer(player) > 60) {
                 setCooldown(player, getCooldownFromPlayer(player) - 5);
