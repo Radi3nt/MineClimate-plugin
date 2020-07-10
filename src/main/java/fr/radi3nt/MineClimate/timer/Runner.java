@@ -94,17 +94,20 @@ public class Runner extends BukkitRunnable {
 
                     // Hot block \\
                     HashMap<Material, Double> hotMaterials = new HashMap<>();
-                    hotMaterials.put(Material.TORCH, 0.01);
-                    hotMaterials.put(Material.WALL_TORCH, 0.01);
-                    hotMaterials.put(Material.CARVED_PUMPKIN, 0.02);
-                    hotMaterials.put(Material.CAMPFIRE, 0.2);
-                    hotMaterials.put(Material.FIRE, 0.2);
-                    hotMaterials.put(Material.BEACON, 0.07);
-                    hotMaterials.put(Material.MAGMA_BLOCK, 0.5);
-                    hotMaterials.put(Material.NETHER_PORTAL, 0.5);
-                    hotMaterials.put(Material.LAVA, 1D);
-                    hotMaterials.put(Material.SEA_LANTERN, -0.3);
                     Double furnaceHeat = 0.25;
+                    try {
+                        hotMaterials.put(Material.TORCH, 0.01);
+                        hotMaterials.put(Material.WALL_TORCH, 0.01);
+                        hotMaterials.put(Material.CARVED_PUMPKIN, 0.02);
+                        hotMaterials.put(Material.CAMPFIRE, 0.2);
+                        hotMaterials.put(Material.FIRE, 0.2);
+                        hotMaterials.put(Material.BEACON, 0.07);
+                        hotMaterials.put(Material.MAGMA_BLOCK, 0.5);
+                        hotMaterials.put(Material.NETHER_PORTAL, 0.5);
+                        hotMaterials.put(Material.LAVA, 1D);
+                        hotMaterials.put(Material.SEA_LANTERN, -0.3);
+                    } catch (NoSuchFieldError error) {
+                    }
                     checkHotBlockAroundPlayer(player, hotMaterials, furnaceHeat);
 
                     ItemStack[] armor = player.getInventory().getArmorContents();
@@ -280,20 +283,25 @@ public class Runner extends BukkitRunnable {
         HashMap<Material, Integer> checkedMaterials = new HashMap<>();
         for (Location blockloc : generateSphere(player.getLocation(), 6)) {
             Material type = blockloc.getBlock().getType();
-            if (blockloc.getBlock().getType().equals(Material.FURNACE) || blockloc.getBlock().getType().equals(Material.BLAST_FURNACE)) {
-                Furnace oldFurnace = (Furnace) blockloc.getBlock().getState();
-                if (oldFurnace.getBurnTime() != 0) {
-                    int number = blocksFromTwoPoints(player.getLocation().getBlock().getLocation(), blockloc.getBlock().getLocation()).size();
+            try {
 
-                    if (player.isSneaking()) {
-                        setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
-                        setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
-                    } else {
-                        setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
-                        setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
+                if (blockloc.getBlock().getType().equals(Material.FURNACE) || blockloc.getBlock().getType().equals(Material.BLAST_FURNACE)) {
+                    Furnace oldFurnace = (Furnace) blockloc.getBlock().getState();
+                    if (oldFurnace.getBurnTime() != 0) {
+                        int number = blocksFromTwoPoints(player.getLocation().getBlock().getLocation(), blockloc.getBlock().getLocation()).size();
+
+                        if (player.isSneaking()) {
+                            setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
+                            setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 2.25));
+                        } else {
+                            setTemperature(player, getTemperatureFromPlayer(player) + furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
+                            setCooldown(player, getCooldownFromPlayer(player) - furnaceHeat / (number * checkedMaterials.getOrDefault(type, 1) * 4));
+                        }
+                        checkedMaterials.put(type, checkedMaterials.getOrDefault(type, 1) + 1);
                     }
-                    checkedMaterials.put(type, checkedMaterials.getOrDefault(type, 1) + 1);
                 }
+            } catch (NoSuchFieldError error) {
+
             }
             if (hotMaterials.containsKey(type)) {
                 int number = blocksFromTwoPoints(player.getLocation().getBlock().getLocation(), blockloc.getBlock().getLocation()).size();
